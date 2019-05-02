@@ -1,5 +1,7 @@
 package pokemon;
 
+import java.util.*;
+
 public class FightController extends Controller {
 	private boolean battle = false;
 	private int ash = 0, misty = 1;
@@ -10,7 +12,7 @@ public class FightController extends Controller {
 	public void StartBattle() {
 		battle = true;
 		
-		
+		//Define  os 2 treinadores seus pokemons e ataques
 		Pokemon[] pokemons_ash = new Pokemon[3];
 		Pokemon[] pokemons_misty = new Pokemon[3];
 		
@@ -30,29 +32,80 @@ public class FightController extends Controller {
 		treinadores[1] = new Treinador("misty" , pokemons_misty );
 	}
 	
-	
+	private void trocaPokemon(Treinador treinador) {
+		Set<Integer> set = new HashSet<Integer>();
+		for (int i = 0; i < treinador.getNumero_pokemons(); i++) {
+			if (treinador.getPokemons()[i].getHP() > 0)
+				set.add(i);
+		}
+		if (set.contains(treinador.getNPokemonAtual())) {
+			set.remove(treinador.getNPokemonAtual()); 
+		}
+		// escolhe um pokemon aleatoriamente
+		int size = set.size();
+		int item = new Random().nextInt(size);
+		int i = 0;
+		for(Object obj : set){
+
+		    if (i == item) {
+		    	treinador.setPokemonAtual(i);
+		    	System.out.println("Treinador " + treinador.getNome() + " trocou de pokemon , vai " + treinador.getPokemonAtual().getNome() + " !");
+		        return ;
+		    }
+			i++;
+		}
+		
+		
+		
+	}
 	
 	private class NovoRound extends Event {
-		public NovoRound(long eventTime) {
+		Treinador treinador;
+		public NovoRound(long eventTime, Treinador treinador) {
 			super(eventTime);
+			this.treinador = treinador;
 		}
 
 		public void action() {
 			long tm = System.currentTimeMillis();
 			double n = Math.random();
+				
+			// se for o ash
+			if (treinadores[0].equals(treinador)) {
+				if(n>=0 && n<0.25) {
+					//ataca
+					addEvent(new Ataca(tm , treinador));
+				}
+				else if ( n>=0.25 && n<0.5) {
+					//trocar pokemon
+					addEvent(new Troca(tm , treinador));
+				}
+				else if (n>=0.5 && n<0.75) {
+					// pocao
+					addEvent(new Item(tm, treinador));
+				}
+				else {
+					//fugir
+					addEvent(new Foge(tm, treinador));
+					
+				}
+			}
 			
-			if(n>=0 && n<0.25) {
-				addEvent(new Ataca(tm));
-			}
-			else if ( n>=0.25 && n<0.5) {
-				//trocar pokemon
-			}
-			else if (n>=0.5 && n<0.75) {
-				// pocao
-			}
+			// se for a misty
 			else {
-				//fugir
+				addEvent(new Ataca(tm, treinador));
 			}
+			
+			//////////////////	TO DO ////////////////////////////////////////////
+			//
+			// ver role das prioridades
+			//
+			// como acabar a luta
+			//
+			// ver se minha ideia da prioridade quebra a proposta
+			//
+			// checar se algum deles ainda tem pokemons vivos			
+			//////////////////
 			
 			
 			//ash sempre faz o q quiser e dps misty ataca.
@@ -61,15 +114,9 @@ public class FightController extends Controller {
 			//se nao, imprime novo estado dos pokemons atuais e  retorna
 			
 			
-			//funcao atacar sempre checar se matou pokemon ou n pra ja trocar.
 			
 			//Criar funcoes:
-			//checar se pokemon atual ta vivo e trocar ativo
 			//checar se todos pokemons  estao mortos e acabar batalha
-			//
-			//criar funcao da misty atacando o ash
-			//
-			//checar qual eh o pokemon atual
 			//
 			
 			
@@ -82,11 +129,15 @@ public class FightController extends Controller {
 	
 
 	private class Item extends Event {
-		public Item(long eventTime) {
+		Treinador treinador;
+		public Item(long eventTime, Treinador treinador) {
 			super(eventTime);
+			this.treinador = treinador;
 		}
 
 		public void action() {
+			
+			treinador.getPokemonAtual().setHP( treinador.getPokemonAtual().getHPMAX());
 			
 			
 			
@@ -99,15 +150,14 @@ public class FightController extends Controller {
 	
 	
 	private class Troca extends Event {
-		public Troca(long eventTime) {
+		Treinador treinador;
+		public Troca(long eventTime, Treinador treinador) {
 			super(eventTime);
+			this.treinador =treinador;
 		}
 
 		public void action() {
-			
-			// ver quais pokemons tao vivos
-			// trocar por outro pokemon q esteja vivo
-			
+			trocaPokemon(treinador);
 			
 			
 		}
@@ -116,14 +166,48 @@ public class FightController extends Controller {
 			return " ";
 		}
 }
+		
 	
+	private class Foge extends Event {
+		Treinador treinador;
+		public Foge(long eventTime,Treinador treinador) {
+			super(eventTime);
+			this.treinador = treinador;
+		}
+
+		public void action() {
+			
+			System.out.println("O treinador " + treinador.getNome() + "fugiu da batalha! " );
+			
+			battle = false;
+			
+			// terminar e ver coisas das prioridades
+		}
+
+		public String description() {
+			return " ";
+		}
+}
 	
-	
+		
 	private class Ataca extends Event {
+		Treinador atacante, defensor;
 		int i;
 		int dano;
-		public Ataca(long eventTime) {
+		//long eventTime;
+		//int w;// controlador do vetor de ataques
+
+		public Ataca(long eventTime, Treinador atacante) {
 			super(eventTime);
+			
+			this.atacante = atacante;
+			//this.eventTime = eventTime;
+			if (treinadores[0].equals(atacante))
+				defensor = treinadores[1];
+			else
+				defensor = treinadores[0];
+			//priority = 0.6;
+
 		}
 
 		public void action() {
@@ -140,34 +224,26 @@ public class FightController extends Controller {
 			else {
 				i =3;
 			}
-			// se der tempo, transformar isso numa funcao pra dar uma limpada nessa parte do codigo
 			
-			//ash ataca
-			dano = treinadores[0].getPokemonAtual().getAtaques()[i].getDano();
-			treinadores[1].getPokemonAtual().setHP( treinadores[1].getPokemonAtual().getHP() - dano);
+			//treinador ataca
+			System.out.println( "Treinador " + atacante.getNome() +": " + atacante.getPokemonAtual().getNome() + " ataque com " + atacante.getPokemonAtual().getAtaques()[i].getNome() );
+			dano = atacante.getPokemonAtual().getAtaques()[i].getDano();
+			System.out.println("O " + defensor.getPokemonAtual().getNome() + " d@ " + defensor.getNome() + " sofreu " + Integer.toString(dano) + " pontos de dano. ");
+			defensor.getPokemonAtual().setHP( defensor.getPokemonAtual().getHP() - dano);
 			
-			//checar se matou pokemon da misty
-			if (treinadores[1].getPokemonAtual().getHP()<=0 ) {
-				System.out.println("Pokemon " + treinadores[1].getPokemonAtual().getNome() + 
-						"do treinador"+treinadores[1].getNome() + "morreu");
-				treinadores[1].setNumero_pokemons_vivos(treinadores[1].getNumero_pokemons_vivos() - 1);
-				if (treinadores[1].getNumero_pokemons_vivos() >0) {
-					treinadores[1].setPokemonAtual(treinadores[1].getNPokemonAtual() +1);
-					System.out.println("Misty lanca novo pokemon "+ treinadores[1].getPokemonAtual().getNome());
-				}
-			}
-			//misty ataca
-			dano = treinadores[1].getPokemonAtual().getAtaques()[i].getDano();
-			treinadores[0].getPokemonAtual().setHP( treinadores[0].getPokemonAtual().getHP() - dano);
 			
-			//checar se matou pokemon do ash
-			if (treinadores[0].getPokemonAtual().getHP()<=0 ) {
-				System.out.println("Pokemon " + treinadores[0].getPokemonAtual().getNome() + 
-						"do treinador"+treinadores[0].getNome() + "morreu");
-				treinadores[0].setNumero_pokemons_vivos(treinadores[1].getNumero_pokemons_vivos() - 1);
-				if (treinadores[0].getNumero_pokemons_vivos() >0) {
-					treinadores[0].setPokemonAtual(treinadores[0].getNPokemonAtual() +1);
-					System.out.println("Ash lanca novo pokemon "+ treinadores[0].getPokemonAtual().getNome());
+			
+			
+			//checar se matou pokemon do defensor, se matou e ainda existem pokemons vivos, troca ele
+			// se n tiver, n faz nada. Quando sair daqui o numero de pokemons vivos vai ser checado e 
+			//a batalha vai acabar
+			if (defensor.getPokemonAtual().getHP()<=0 ) {
+				System.out.println("Pokemon " + defensor.getPokemonAtual().getNome() + 
+						"do treinador"+defensor.getNome() + "morreu");
+				defensor.setNumero_pokemons_vivos(defensor.getNumero_pokemons_vivos() - 1);
+				if (defensor.getNumero_pokemons_vivos() >0) {
+					trocaPokemon(defensor);
+					System.out.println("Misty lanca novo pokemon "+ defensor.getPokemonAtual().getNome());
 				}
 			}
 			
@@ -188,10 +264,17 @@ public class FightController extends Controller {
 		
 		
 		while (fc.battle == true) {
-			fc.addEvent(fc.new NovoRound(tm));
+			// acao do ash
+			fc.addEvent(fc.new NovoRound(tm, fc.treinadores[0]));
+			// faz sentido colocar fc.treinadores?
+			
+			// acao da misty
+			fc.addEvent(fc.new NovoRound(tm, fc.treinadores[1]));
+			
 			fc.run();
 		
 		}
+		System.out.println("Fim da luta.");
 
 
 		
