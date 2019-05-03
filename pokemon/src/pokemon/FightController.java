@@ -4,12 +4,48 @@ import java.util.*;
 
 public class FightController extends Controller {
 	private boolean battle = false;
-	private int ash = 0, misty = 1;
 	Treinador[] treinadores = new Treinador[2];
 	
+
+
+	private void statusTreinadores() {
+		Treinador treinador1 = treinadores[0]; 
+		Treinador treinador2 = treinadores[1];
+		
+		System.out.println("-----------------");
+		System.out.println(treinador1.getNome());
+		System.out.println(treinador1.getPokemonAtual().getNome() + " , HP: "+ treinador1.getPokemonAtual().getHP());
+		System.out.println("-----------------");
+		System.out.println(treinador2.getNome());
+		System.out.println(treinador2.getPokemonAtual().getNome() + " , HP: "+ treinador2.getPokemonAtual().getHP());
+		System.out.println("-----------------");
+	}
+
+
 	
+	private void checaSobreviventes() {
+		//checa se algum dos 2 treinadores ta sem pokemons vivos
+		checaSobrevivente(treinadores[0]);
+		checaSobrevivente(treinadores[1]);		
+	}
 	
-	public void StartBattle() {
+	private void checaSobrevivente(Treinador treinador){
+		if (treinador.getNumero_pokemons_vivos() == 0) {
+			System.out.println("Todos os pokemons do treinador  " + treinador.getNome() + " morreram. Fim da luta!");
+			encerraLuta();
+			
+		}
+		
+	}
+	
+	private void encerraLuta() {
+		// acaba a batalha e apaga todos os eventos 
+		//(importante pra caso ainda tenha  a ação do segundo treinador ja na lista para ocorrer mas precisamos acabar a luta antes disso)
+		battle = false;
+		clearEvents();	
+	}
+	
+	public void comecaLuta() {
 		battle = true;
 		
 		//Define  os 2 treinadores seus pokemons e ataques
@@ -32,29 +68,43 @@ public class FightController extends Controller {
 		treinadores[1] = new Treinador("misty" , pokemons_misty );
 	}
 	
-	private void trocaPokemon(Treinador treinador) {
+	private void trocaPokemon(Treinador treinador, long eventTime) {
+		// cria set de pokemons vivos
 		Set<Integer> set = new HashSet<Integer>();
 		for (int i = 0; i < treinador.getNumero_pokemons(); i++) {
 			if (treinador.getPokemons()[i].getHP() > 0)
 				set.add(i);
 		}
+		// tire do set o pokemon atual 
 		if (set.contains(treinador.getNPokemonAtual())) {
 			set.remove(treinador.getNPokemonAtual()); 
 		}
-		// escolhe um pokemon aleatoriamente
+		
+
 		int size = set.size();
-		int item = new Random().nextInt(size);
+		
+		//checa se tem outro pokemon pra trocar
+		
+		if (size ==0) {
+			// ja q n tem outro pokemon, avisa q n tem e acaba a rodada.
+			System.out.println(" Treinador " + treinador.getNome() + "tentou trocar de pokemon mas não tem outros pokemons para escolher!" );
+			// nao vale a pena o trabalho para dar uma segunda chance ao treinador
+			//addEvent(new NovoRound( eventTime , treinador));
+			return;
+		}
+		
+		// escolhe um pokemon aleatoriamente
+		int n = new Random().nextInt(size);
 		int i = 0;
 		for(Object obj : set){
 
-		    if (i == item) {
+		    if (i == n) {
 		    	treinador.setPokemonAtual(i);
 		    	System.out.println("Treinador " + treinador.getNome() + " trocou de pokemon , vai " + treinador.getPokemonAtual().getNome() + " !");
 		        return ;
 		    }
 			i++;
 		}
-		
 		
 		
 	}
@@ -74,15 +124,17 @@ public class FightController extends Controller {
 			if (treinadores[0].equals(treinador)) {
 				if(n>=0 && n<0.25) {
 					//ataca
-					addEvent(new Ataca(tm , treinador));
+					addEvent(new Ataca(tm, treinador));
 				}
 				else if ( n>=0.25 && n<0.5) {
-					//trocar pokemon
-					addEvent(new Troca(tm , treinador));
-				}
-				else if (n>=0.5 && n<0.75) {
 					// pocao
 					addEvent(new Item(tm, treinador));
+					
+				}
+				else if (n>=0.5 && n<0.75) {
+					//trocar pokemon
+					addEvent(new Troca(tm, treinador));
+					
 				}
 				else {
 					//fugir
@@ -96,28 +148,10 @@ public class FightController extends Controller {
 				addEvent(new Ataca(tm, treinador));
 			}
 			
-			//////////////////	TO DO ////////////////////////////////////////////
-			//
-			// ver role das prioridades
-			//
-			// como acabar a luta
-			//
-			// ver se minha ideia da prioridade quebra a proposta
-			//
-			// checar se algum deles ainda tem pokemons vivos			
-			//////////////////
-			
-			
-			//ash sempre faz o q quiser e dps misty ataca.
-			
-			//checa se todos pokemons estao mortos, se sim acaba a luta e imprime q acabou
-			//se nao, imprime novo estado dos pokemons atuais e  retorna
-			
-			
-			
-			//Criar funcoes:
-			//checar se todos pokemons  estao mortos e acabar batalha
-			//
+			statusTreinadores();
+
+			checaSobreviventes();
+
 			
 			
 		}
@@ -144,21 +178,23 @@ public class FightController extends Controller {
 		}
 
 		public String description() {
-			return " ";
+			return " Treinador " +treinador.getNome() + " usou uma pocao! " + treinador.getPokemonAtual().getNome() + " recuperou totalmente seu HP.";
 		}
 }	
 	
 	
 	private class Troca extends Event {
 		Treinador treinador;
+		long eventTime;
 		public Troca(long eventTime, Treinador treinador) {
 			super(eventTime);
 			this.treinador =treinador;
+			this.eventTime = eventTime;
+			
 		}
 
 		public void action() {
-			trocaPokemon(treinador);
-			
+			trocaPokemon(treinador, eventTime);			
 			
 		}
 
@@ -176,16 +212,12 @@ public class FightController extends Controller {
 		}
 
 		public void action() {
-			
-			System.out.println("O treinador " + treinador.getNome() + "fugiu da batalha! " );
-			
-			battle = false;
-			
-			// terminar e ver coisas das prioridades
+			encerraLuta();
+		
 		}
 
 		public String description() {
-			return " ";
+			return "O treinador " + treinador.getNome() + "fugiu da batalha! " ;
 		}
 }
 	
@@ -194,20 +226,19 @@ public class FightController extends Controller {
 		Treinador atacante, defensor;
 		int i;
 		int dano;
-		//long eventTime;
+		long eventTime;
 		//int w;// controlador do vetor de ataques
 
 		public Ataca(long eventTime, Treinador atacante) {
 			super(eventTime);
 			
 			this.atacante = atacante;
-			//this.eventTime = eventTime;
+			this.eventTime = eventTime;
+			
 			if (treinadores[0].equals(atacante))
 				defensor = treinadores[1];
 			else
 				defensor = treinadores[0];
-			//priority = 0.6;
-
 		}
 
 		public void action() {
@@ -226,31 +257,42 @@ public class FightController extends Controller {
 			}
 			
 			//treinador ataca
-			System.out.println( "Treinador " + atacante.getNome() +": " + atacante.getPokemonAtual().getNome() + " ataque com " + atacante.getPokemonAtual().getAtaques()[i].getNome() );
+			
 			dano = atacante.getPokemonAtual().getAtaques()[i].getDano();
-			System.out.println("O " + defensor.getPokemonAtual().getNome() + " d@ " + defensor.getNome() + " sofreu " + Integer.toString(dano) + " pontos de dano. ");
 			defensor.getPokemonAtual().setHP( defensor.getPokemonAtual().getHP() - dano);
 			
+			String texto = "";
+			texto += "Treinador " + atacante.getNome() +": " + atacante.getPokemonAtual().getNome() + " ataque com " + atacante.getPokemonAtual().getAtaques()[i].getNome()  ;
+			texto += " /n ";
+			texto += "O " + defensor.getPokemonAtual().getNome() + " d@ " + defensor.getNome() + " sofreu " + Integer.toString(dano) + " pontos de dano. " ;
 			
-			
+			System.out.println(texto);
 			
 			//checar se matou pokemon do defensor, se matou e ainda existem pokemons vivos, troca ele
 			// se n tiver, n faz nada. Quando sair daqui o numero de pokemons vivos vai ser checado e 
 			//a batalha vai acabar
 			if (defensor.getPokemonAtual().getHP()<=0 ) {
-				System.out.println("Pokemon " + defensor.getPokemonAtual().getNome() + 
-						"do treinador"+defensor.getNome() + "morreu");
+				System.out.println("Pokemon " + defensor.getPokemonAtual().getNome() + "do treinador"+defensor.getNome() + "morreu");
+				
 				defensor.setNumero_pokemons_vivos(defensor.getNumero_pokemons_vivos() - 1);
 				if (defensor.getNumero_pokemons_vivos() >0) {
-					trocaPokemon(defensor);
-					System.out.println("Misty lanca novo pokemon "+ defensor.getPokemonAtual().getNome());
+					
+					trocaPokemon(defensor, eventTime);
+					//texto+= defensor.getNome() +  " lanca novo pokemon "+ defensor.getPokemonAtual().getNome();
 				}
 			}
+			
+			
+			
+			
+			
 			
 		}
 
 		public String description() {
-			return " ";
+			
+			
+			return "";
 		}
 }
 	
@@ -260,7 +302,7 @@ public class FightController extends Controller {
 	public static void main(String[] args) {
 		FightController fc = new FightController();
 		long tm = System.currentTimeMillis();
-		fc.StartBattle();
+		fc.comecaLuta();
 		
 		
 		while (fc.battle == true) {

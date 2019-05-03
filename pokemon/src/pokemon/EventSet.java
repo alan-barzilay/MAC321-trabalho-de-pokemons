@@ -1,6 +1,6 @@
 package pokemon;
 class EventSet {
-	private Event[] events = new Event[100];
+	private Event[] events = new Event[5000];
 	private int index = 0;
 	private int next = 0;
 	
@@ -26,4 +26,16 @@ class EventSet {
 	public void removeCurrent() {
 		events[next] = null;
 	}
+	public Event[] getEvents() {
+		return events;
+	}
+	public void setEvents(Event[] events) {
+		this.events = events;
+	}
+	
+	
+	
+	
+	
+	
 }

@@ -19,4 +19,10 @@ public class Controller {
 			}			
 		}		
 	}
+	
+	public void clearEvents(){
+		for (int i = 0; i < es.getEvents().length; i ++){
+			es.getEvents()[i] = null;
+		}
+	}
 }
