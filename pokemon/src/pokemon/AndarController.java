@@ -49,17 +49,17 @@ public class AndarController extends Controller {
 		}
 		
 		public void action(){
-			if (posicaoNoMapa < mapa.length ) {
+			if (posicaoNoMapa < mapa.length -1) {
 				posicaoNoMapa +=1;
 				if (mapa[posicaoNoMapa] == 1 ) {
 					encontraPokemon( getEvtTime() );
 				}
+				imprimeMapa();
 			}
 			else {
 				// Acaba jornada
 				chegouNoFim = true;
 			}
-			imprimeMapa();
 		}
 		
 		public String description() {
@@ -76,7 +76,7 @@ public class AndarController extends Controller {
 		}
 		
 		public void action(){
-			System.out.println("Treinador encontrou um pokemon selvagem!");		
+			System.out.println("\n\nTreinador encontrou um pokemon selvagem!");		
 			FightController fc = new FightController();
 			long tm = System.currentTimeMillis();
 			fc.comecaLutaSelvagem();
@@ -84,17 +84,18 @@ public class AndarController extends Controller {
 			
 			while (fc.isBattle() == true) {
 				//acao do ash
+				fc.statusTreinadores();
 				fc.adicionaRound(tm, fc.treinadores[0]);
 				
 				//acao pokemon selvagem
-				fc.adicionaRound(tm+100, fc.treinadores[1]);
+				fc.adicionaRound(tm+300, fc.treinadores[1]);
 				
 				fc.run();		
 			}			
 		}
 		
 		public String description() {
-			return "Fim da Luta.";
+			return "Fim da Luta.\n\n";
 		}
 	}
 	
@@ -125,16 +126,56 @@ public class AndarController extends Controller {
 				"                                `'                            '-._|");
 		
 		System.out.println("Legenda:");
-		System.out.println("P =>  Posicao do Jogador");
+		System.out.println("P         => Posicao do Jogador");
 		System.out.println("_________ => Chao Comum");
 		System.out.println(",,,,,,,,, => Grama Alta");
-		
+		System.out.println(" \n\n\n\n O treinador comecara sua jornada pela Victory Road!");
+		ac.imprimeMapa();
+		System.out.println();
 		
 		while( ac.chegouNoFim == false) {
-			ac.addEvent(ac.new AndaUmPasso(tm + 1000)); 
+			tm = System.currentTimeMillis();
+			ac.addEvent(ac.new AndaUmPasso(tm + 200)); 
 			ac.run();
 		}
 		
+		System.out.println(" \n---------------------------------------------------------------------------------------\n O treinador atravessou a Victory Road e esta pronto para desafiar a elite 4!\n---------------------------------------------------------------------------------------");
+		System.out.println("                                       ,|\n" + 
+				"                                       ||\n" + 
+				"                               ,-\"'\"\"`' `._\n" + 
+				"                              '----.     __`....._\n" + 
+				"                               `    `.  `. ;      `.\n" + 
+				"           FIM                  `.    `.  `   ,\"`. |\n" + 
+				"                                  `.  _.`._   |  ' |\n" + 
+				"                                  .','  ,' `.  `--'\n" + 
+				"                                 /.' _,'    | /\n" + 
+				"                                '/_.'       |.\n" + 
+				"                                 `---`\".    ||\n" + 
+				"                                       |    ||\n" + 
+				"                                      ,'    `|\n" + 
+				"                         _           /       |\n" + 
+				"                        ' `.        .'       |\n" + 
+				"                         .  `._  _,'/|       |\n" + 
+				"                        _|     \"'  / |       '\n" + 
+				"                    _,-' |        /  '        .\n" + 
+				"                 |\"'            ,'  '          \\\n" + 
+				"                 |   _        ,'   /            \\\n" + 
+				"                 ;  '        /    j              .\n" + 
+				"            ,\"--'    `.    .      |              |         ________\n" + 
+				"            `.   -.       / '     |              |   _,-\"\"'   __.._\"`-._\n" + 
+				"             ,' ,-.`-.__.' /      '              |.-'  _..--'\"       _.-'\n" + 
+				"             \\.'   `-.___.'      ,               '__.-\"           _.'\n" + 
+				"             /        _..--    . |              /               ,'\n" + 
+				"           ,`      .-'         | |           _,'._          _,-'\n" + 
+				"       _,-'      ,'           .' '       _.-'     \"-.....-\"'\n" + 
+				"     ,'     __ ,'          _.'  /  __..-'\n" + 
+				"   ,' _.-\"\"'  /         _.'  _.'-\"'\n" + 
+				"  '-'\"       /      _.-' _.-\"\n" + 
+				"            /    _.' _.-'\n" + 
+				"           .   .'_.-'\n" + 
+				"           | ,'.'\n" + 
+				"           | .`\n" + 
+				"            `");
 		
 		
 		// anda um passo
