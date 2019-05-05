@@ -1,6 +1,6 @@
 package pokemon;
 class EventSet {
-	private Event[] events = new Event[5000];
+	private Event[] events = new Event[100];
 	private int index = 0;
 	private int next = 0;
 	

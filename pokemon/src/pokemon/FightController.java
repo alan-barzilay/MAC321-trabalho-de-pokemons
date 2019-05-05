@@ -8,6 +8,19 @@ public class FightController extends Controller {
 	
 
 
+	public boolean isBattle() {
+		return battle;
+	}
+	public void setBattle(boolean battle) {
+		this.battle = battle;
+	}
+	public Treinador[] getTreinadores() {
+		return treinadores;
+	}
+	public void setTreinadores(Treinador[] treinadores) {
+		this.treinadores = treinadores;
+	}
+
 	private void statusTreinadores() {
 		Treinador treinador1 = treinadores[0]; 
 		Treinador treinador2 = treinadores[1];
@@ -22,6 +35,9 @@ public class FightController extends Controller {
 	}
 
 
+	
+	
+	
 	
 	private void checaSobreviventes() {
 		//checa se algum dos 2 treinadores ta sem pokemons vivos
@@ -45,12 +61,35 @@ public class FightController extends Controller {
 		clearEvents();	
 	}
 	
-	public void comecaLuta() {
+	public void comecaLutaTreinador() {
 		battle = true;
 		
 		//Define  os 2 treinadores seus pokemons e ataques
 		Pokemon[] pokemons_ash = new Pokemon[3];
-		Pokemon[] pokemons_misty = new Pokemon[3];
+		Pokemon[] pokemon_selvagem = new Pokemon[1];
+		
+		Ataque[] ataques = {new Ataque("dash", 5), new Ataque("horn",60), new Ataque("growl",1 ), new Ataque("stomp",30)};
+		Ataque[] ataques_ratata = {new Ataque("growl", 1), new Ataque("growl", 1) ,new Ataque("headbutt", 10) ,new Ataque("growl", 1)  };
+		
+		pokemons_ash[0] = new Pokemon("Tauros", 75, ataques );
+		pokemons_ash[1] = new Pokemon("Pikachu", 80, ataques );
+		pokemons_ash[2] = new Pokemon("Charizard", 105, ataques );
+		
+		
+		pokemon_selvagem[0] = new Pokemon("Ratata", 60, ataques_ratata );
+		
+		treinadores[0] = new Treinador("ash" , pokemons_ash);
+		treinadores[1] = new Treinador("wild" , pokemon_selvagem );
+	}
+	
+	
+	
+	public void comecaLutaSelvagem() {
+		battle = true;
+		
+		//Define  os 2 treinadores seus pokemons e ataques
+		Pokemon[] pokemons_ash = new Pokemon[3];
+		Pokemon[] pokemons_misty = new Pokemon[1];;
 		
 		Ataque[] ataques = {new Ataque("dash", 5), new Ataque("horn",60), new Ataque("growl",1 ), new Ataque("stomp",30)};
 		Ataque[] ataques_misty = {new Ataque("splash", 1), new Ataque("splash", 1) ,new Ataque("splash", 1) ,new Ataque("splash", 1)  };
@@ -124,36 +163,32 @@ public class FightController extends Controller {
 			if (treinadores[0].equals(treinador)) {
 				if(n>=0 && n<0.25) {
 					//ataca
-					addEvent(new Ataca(tm, treinador));
+					addEvent(new Ataca(tm+1000, treinador));
 				}
 				else if ( n>=0.25 && n<0.5) {
 					// pocao
-					addEvent(new Item(tm, treinador));
+					addEvent(new Item(tm+750, treinador));
 					
 				}
 				else if (n>=0.5 && n<0.75) {
 					//trocar pokemon
-					addEvent(new Troca(tm, treinador));
+					addEvent(new Troca(tm+500, treinador));
 					
 				}
 				else {
 					//fugir
-					addEvent(new Foge(tm, treinador));
+					addEvent(new Foge(tm+0, treinador));
 					
 				}
 			}
 			
 			// se for a misty
 			else {
-				addEvent(new Ataca(tm, treinador));
+				addEvent(new Ataca(tm + 1000, treinador));
 			}
 			
 			statusTreinadores();
-
-			checaSobreviventes();
-
-			
-			
+			checaSobreviventes();			
 		}
 
 		public String description() {
@@ -297,21 +332,23 @@ public class FightController extends Controller {
 }
 	
 	
+	public void adicionaRound(long tm, Treinador treinador) {
+		addEvent(new NovoRound(tm , treinador));	
+	}
 	
 	
 	public static void main(String[] args) {
 		FightController fc = new FightController();
 		long tm = System.currentTimeMillis();
-		fc.comecaLuta();
+		fc.comecaLutaTreinador();
 		
 		
-		while (fc.battle == true) {
+		while (fc.isBattle() == true) {
 			// acao do ash
-			fc.addEvent(fc.new NovoRound(tm, fc.treinadores[0]));
-			// faz sentido colocar fc.treinadores?
+			fc.adicionaRound(tm, fc.treinadores[0]);
 			
 			// acao da misty
-			fc.addEvent(fc.new NovoRound(tm, fc.treinadores[1]));
+			fc.adicionaRound(tm+100, fc.treinadores[1]);
 			
 			fc.run();
 		
