@@ -5,6 +5,7 @@ Resumidamente, o objetivo era realizar uma simulação de batalhas pokemon utili
 O uso da linguagem Java e a disponibilização no Github como repositório público foram exigências do professor.
 
 Eu inlcui aqui um exemplo de output dos exercícios 1 e 2. 
+
 Para ver o Exercício 1, rode a main da classe FighterController.
 Para ver o Exercício 2, rode a main da classe AndarController.
 
