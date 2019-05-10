@@ -8,9 +8,9 @@ Para ver o Exercício 1, rode a main da classe FighterController.
 
 Para ver o Exercício 2, rode a main da classe AndarController.
 
-Fonte ASCII Art Logo Pokemon: https://www.asciiart.eu/video-games/pokemon
+* Fonte ASCII Art Logo Pokemon: https://www.asciiart.eu/video-games/pokemon
 
-Fonte ASCII Arts Pokemons:  https://www.fiikus.net/?pokedex
+* Fonte ASCII Arts Pokemons:  https://www.fiikus.net/?pokedex
 
 
 
