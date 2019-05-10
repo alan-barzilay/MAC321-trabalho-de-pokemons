@@ -4,15 +4,17 @@ Esse foi um trabalho para a disciplina MAC0321, o enunciado pode ser encontrado 
 Resumidamente, o objetivo era realizar uma simulação de batalhas pokemon utilizando conceitos aprendidos na matéria.
 O uso da linguagem Java e a disponibilização no Github como repositório público foram exigências do professor.
 
-Eu inlcui aqui um exemplo de output dos exercícios 1 e 2. 
-
 Para ver o Exercício 1, rode a main da classe FighterController.
+
 Para ver o Exercício 2, rode a main da classe AndarController.
 
 Fonte ASCII Art Logo Pokemon: https://www.asciiart.eu/video-games/pokemon
 
-
 Fonte ASCII Arts Pokemons:  https://www.fiikus.net/?pokedex
+
+
+
+Eu inlcui aqui um exemplo de output dos exercícios 1 e 2. 
 
 ## Ex 1
 
