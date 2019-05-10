@@ -38,6 +38,9 @@ public class Pokemon {
 	}
 
 	public void setHP(int hP) {
+		if (hP<0) {
+			hP =0;
+		}
 		HP = hP;
 	}
 

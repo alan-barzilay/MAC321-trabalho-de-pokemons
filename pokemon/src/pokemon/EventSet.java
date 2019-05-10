@@ -1,41 +1,29 @@
 package pokemon;
 class EventSet {
-	private Event[] events = new Event[100];
-	private int index = 0;
-	private int next = 0;
+	private Event[] events = new Event[2];
 	
 	public void add(Event e) {
-		if(index >= events.length)
-		return; // (In real life, throw exception)
-		events[index++] = e;
+		if(events[0] == null) {	
+			events[0] = e;
+		}
+		else {
+			events[1] = e;
+		}		
 	}
-	public Event getNext() {
-		boolean looped = false;
-		int start = next;
-		do {
-			next = (next + 1) % events.length;
-			// See if it has looped to the beginning:
-			if(start == next) looped = true;
-			// If it loops past start, the list
-			// is empty:
-			if((next == (start + 1) % events.length)&& looped) return null;
-		} 
-		while(events[next] == null);
-		return events[next];
-	}
-	public void removeCurrent() {
-		events[next] = null;
-	}
+
 	public Event[] getEvents() {
 		return events;
 	}
 	public void setEvents(Event[] events) {
 		this.events = events;
 	}
-	
-	
-	
-	
+
+	public void clearEvents(){
+		Event[] events_vazio = new Event[2];
+		events_vazio[0]= null;
+		events_vazio[1]= null;
+		setEvents(events_vazio);
+	}
 	
 	
 }

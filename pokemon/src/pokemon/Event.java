@@ -2,22 +2,18 @@ package pokemon;
 
 
 abstract public class Event {
-	private long evtTime;
+	private double priority;
 	
-	public long getEvtTime() {
-		return evtTime;
+	public double getPriority() {
+		return priority;
 	}
 
-	public void setEvtTime(long evtTime) {
-		this.evtTime = evtTime;
+	public void setPriority(double priority) {
+		this.priority = priority;
 	}
 
-	public Event(long eventTime) {
-		evtTime = eventTime;
-		}
-	
-	public boolean ready() {
-		return System.currentTimeMillis() >= evtTime;
+	public Event(double priority) {
+		this.priority = priority;
 		}
 	
 	abstract public void action();
